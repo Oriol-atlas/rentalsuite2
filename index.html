@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas Rental Suite</title>
+  
+  <!-- CSS / Bootstrap & FontAwesome / Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --atlas-blue: #0072ce;
+      --atlas-dark: #003366;
+      --atlas-accent: #ff6b00;
+      --bg-light: #f4f7f9;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Navbar */
+    .navbar-custom {
+      background-color: #ffffff;
+      border-bottom: 3px solid var(--atlas-blue);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 0.75rem 1.5rem;
+    }
+    .navbar-brand img {
+      height: 38px;
+    }
+    .navbar-brand span {
+      font-weight: 700;
+      color: var(--atlas-dark);
+      font-size: 1.25rem;
+      margin-left: 8px;
+    }
+
+    /* Layout Principal */
+    .app-container {
+      display: flex;
+      min-height: calc(100vh - 65px);
+    }
+
+    /* Sidebar / Filtros */
+    .sidebar {
+      width: 280px;
+      background-color: #ffffff;
+      border-right: 1px solid var(--border-color);
+      padding: 1.5rem;
+      flex-shrink: 0;
+    }
+    .sidebar-title {
+      font-weight: 700;
+      color: var(--atlas-dark);
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    .filter-group {
+      margin-bottom: 1.5rem;
+    }
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    /* Tabs de Navegación Módulos */
+    .nav-pills-custom .nav-link {
+      color: var(--text-muted);
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      margin-right: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .nav-pills-custom .nav-link.active {
+      background-color: var(--atlas-blue);
+      color: #ffffff;
+    }
+    .nav-pills-custom .nav-link:hover:not(.active) {
+      background-color: #e6f0fa;
+      color: var(--atlas-blue);
+    }
+
+    /* Tarjetas de Equipos / Herramientas */
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+    .card-img-wrapper {
+      height: 160px;
+      background-color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .card-img-wrapper img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+    .card-body-custom {
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--atlas-blue);
+      margin-bottom: 0.25rem;
+    }
+    .card-title-custom {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--atlas-dark);
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    /* Badges de Estado */
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25em 0.6em;
+      border-radius: 50rem;
+      font-weight: 600;
+    }
+    .badge-ok { background-color: #d1fae5; color: #065f46; }
+    .badge-warn { background-color: #fef3c7; color: #92400e; }
+    .badge-alert { background-color: #fee2e2; color: #991b1b; }
+
+    /* Módulo de Control de Fugas / Pruebas de Presión */
+    .leak-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .gauge-display {
+      background: #0f172a;
+      color: #38bdf8;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      text-align: center;
+    }
+    .gauge-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar HEADER -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="fa-solid fa-gears fa-2x text-primary me-2"></i>
+        <span>Atlas Rental Suite</span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge bg-light text-dark border px-3 py-2"><i class="fa-solid fa-user me-1"></i> Operador Técnico</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-container">
+    
+    <!-- BARRA LATERAL / FILTROS -->
+    <aside class="sidebar">
+      <div class="sidebar-title"><i class="fa-solid fa-sliders me-2"></i>Filtros de Búsqueda</div>
+      
+      <div class="filter-group">
+        <label for="searchInput">Buscar Equipo / Herramienta</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" id="searchInput" class="form-control" placeholder="Ej: Compresor, Llave...">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="categorySelect">Categoría</label>
+        <select id="categorySelect" class="form-select">
+          <option value="all">Todas las categorías</option>
+          <option value="compresores">Compresores</option>
+          <option value="herramientas">Herramientas de Apriete</option>
+          <option value="fugas">Control de Fugas</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusSelect">Estado</label>
+        <select id="statusSelect" class="form-select">
+          <option value="all">Todos los estados</option>
+          <option value="disponible">Disponible</option>
+          <option value="en_uso">En Uso / Prueba</option>
+          <option value="alerta">Atención Requerida</option>
+        </select>
+      </div>
+
+      <hr class="my-4 text-muted">
+
+      <div class="card bg-light border-0 p-3">
+        <small class="text-muted d-block mb-1">Estado del Sistema</small>
+        <div class="d-flex align-items-center text-success fw-bold">
+          <i class="fa-solid fa-circle-check me-2"></i> Red Operativa 100%
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      
+      <!-- Navegación por Módulos -->
+      <ul class="nav nav-pills nav-pills-custom mb-4" id="moduleTabs" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" id="fleet-tab" data-bs-toggle="tab" data-bs-target="#fleet-content" type="button"><i class="fa-solid fa-boxes-stacked me-2"></i>Flota de Equipos</button>
+        </li>
+        <!-- NUEVO MÓDULO INTEGRADO: CONTROL DE FUGAS -->
+        <li class="nav-item">
+          <button class="nav-link" id="leak-tab" data-bs-toggle="tab" data-bs-target="#leak-content" type="button"><i class="fa-solid fa-gauge-high me-2"></i>Control de Fugas & Presión</button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="moduleTabsContent">
+        
+        <!-- PESTAÑA 1: FLOTA DE EQUIPOS -->
+        <div class="tab-pane fade show active" id="fleet-content" role="tabpanel">
+          <div class="row g-4" id="fleetGrid">
+            
+            <!-- Tarjeta 1 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="tool-card">
+                <div class="card-img-wrapper">
+                  <i class="fa-solid fa-compressor fa-5x text-secondary"></i>
+                </div>
+                <div class="card-body-custom">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="card-category">Compresor</span>
+                    <span class="status-badge badge-ok">Disponible</span>
+                  </div>
+                  <h5 class="card-title-custom">PTS 1600 AIR</h5>
+                  <p class="card-desc">Compresor exento de aceite para aplicaciones de alto flujo y alta presión.</p>
+                  <button class="btn btn-outline-primary w-100 rounded-pill" onclick="openDetails('PTS 1600 AIR', 'Disponible')"><i class="fa-solid fa-circle-info me-1"></i> Ver Detalles</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 2 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="tool-card">
+                <div class="card-img-wrapper">
+                  <i class="fa-solid fa-wrench fa-5x text-secondary"></i>
+                </div>
+                <div class="card-body-custom">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="card-category">Herramienta</span>
+                    <span class="status-badge badge-warn">En Uso</span>
+                  </div>
+                  <h5 class="card-title-custom">Llave Hidráulica RTX</h5>
+                  <p class="card-desc">Llave dinamométrica de par preciso para trabajos de empernado industrial crítico.</p>
+                  <button class="btn btn-outline-primary w-100 rounded-pill" onclick="openDetails('Llave Hidráulica RTX', 'En Uso')"><i class="fa-solid fa-circle-info me-1"></i> Ver Detalles</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 3 (Control de Fugas Integrado) -->
+            <div class="col-md-6 col-lg-4">
+              <div class="tool-card">
+                <div class="card-img-wrapper">
+                  <i class="fa-solid fa-network-wired fa-5x text-secondary"></i>
+                </div>
+                <div class="card-body-custom">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="card-category">Control de Fugas</span>
+                    <span class="status-badge badge-ok">Monitoreando</span>
+                  </div>
+                  <h5 class="card-title-custom">Sistema de Prueba Hydratight</h5>
+                  <p class="card-desc">Unidad portátil para verificación de estanqueidad y detección de fugas en tuberías.</p>
+                  <button class="btn btn-outline-primary w-100 rounded-pill" onclick="switchToLeakModule()"><i class="fa-solid fa-chart-line me-1"></i> Ir a Panel de Control</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PESTAÑA 2: NUEVA FUNCIÓN CONTROL DE FUGAS -->
+        <div class="tab-pane fade" id="leak-content" role="tabpanel">
+          
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h4 class="fw-bold mb-1" style="color: var(--atlas-dark);">Módulo de Control de Fugas & Ensayos de Presión</h4>
+              <p class="text-muted mb-0">Monitoreo en tiempo real de caídas de presión y cálculo de tasa de fugas.</p>
+            </div>
+            <button class="btn btn-primary" onclick="addLeakTest()"><i class="fa-solid fa-plus me-1"></i> Nueva Prueba</button>
+          </div>
+
+          <div class="row">
+            <!-- Indicador en vivo -->
+            <div class="col-lg-4">
+              <div class="leak-card">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-gauge me-2 text-primary"></i>Presión Actual de Línea</h6>
+                <div class="gauge-display mb-3">
+                  <div class="gauge-value" id="livePressure">12.45</div>
+                  <small class="text-muted">BAR (PSI: 180.5)</small>
+                </div>
+                <div class="d-flex justify-content-between text-sm mb-2">
+                  <span class="text-muted">Presión de Setpoint:</span>
+                  <span class="fw-bold">12.50 BAR</span>
+                </div>
+                <div class="d-flex justify-content-between text-sm mb-3">
+                  <span class="text-muted">Tasa de Caída:</span>
+                  <span class="fw-bold text-success" id="leakRate">-0.01 BAR/min (Normal)</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar bg-success" role="progressbar" style="width: 98%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calculadora / Registro de Fugas -->
+            <div class="col-lg-8">
+              <div class="leak-card">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-calculator me-2 text-primary"></i>Calculadora de Pérdida de Carga / Prueba de Caída</h6>
+                <form id="leakForm" class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label text-muted small">Presión Inicial (P1 - BAR)</label>
+                    <input type="number" step="0.1" class="form-control" id="p1Input" value="10.0">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label text-muted small">Presión Final (P2 - BAR)</label>
+                    <input type="number" step="0.1" class="form-control" id="p2Input" value="9.8">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label text-muted small">Tiempo de Ensayo (min)</label>
+                    <input type="number" class="form-control" id="timeInput" value="15">
+                  </div>
+                  <div class="col-12 text-end mt-3">
+                    <button type="button" class="btn btn-dark" onclick="calculateLeak()"><i class="fa-solid fa-circle-check me-1"></i> Evaluar Estanqueidad</button>
+                  </div>
+                </form>
+
+                <div id="leakResult" class="alert alert-info mt-3 mb-0 d-none">
+                  <!-- Resultado dinámico -->
+                </div>
+              </div>
+
+              <!-- Tabla de Registros Recientes -->
+              <div class="leak-card">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-list-check me-2 text-primary"></i>Histórico de Pruebas de Fugas</h6>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Línea/Equipo</th>
+                        <th>Presión</th>
+                        <th>Delta P</th>
+                        <th>Resultado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>28/08/2026 12:30</td>
+                        <td>Línea Principal B-12</td>
+                        <td>12.5 BAR</td>
+                        <td>-0.05 BAR</td>
+                        <td><span class="status-badge badge-ok">Aprobado</span></td>
+                      </tr>
+                      <tr>
+                        <td>28/08/2026 11:15</td>
+                        <td>Compresor PTS 1600</td>
+                        <td>8.0 BAR</td>
+                        <td>-0.45 BAR</td>
+                        <td><span class="status-badge badge-alert">Fuga Detectada</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal Detalle de Equipo -->
+  <div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalTitle">Detalle de Equipo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Contenido modal -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Bootstrap & Script Custom -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Cambio directo a pestaña de fugas
+    function switchToLeakModule() {
+      const leakTab = new bootstrap.Tab(document.getElementById('leak-tab'));
+      leakTab.show();
+    }
+
+    // Modal de Detalles
+    function openDetails(name, status) {
+      document.getElementById('modalTitle').innerText = name;
+      document.getElementById('modalBody').innerHTML = `
+        <p><strong>Estado Actual:</strong> ${status}</p>
+        <p><strong>Ubicación:</strong> Nave Industrial A-4</p>
+        <p><strong>Última Revisión:</strong> Hace 2 días</p>
+        <p class="text-muted">El equipo cumple con todos los estándares de seguridad Atlas Copco.</p>
+      `;
+      new bootstrap.Modal(document.getElementById('detailsModal')).show();
+    }
+
+    // Calculadora de Fugas
+    function calculateLeak() {
+      const p1 = parseFloat(document.getElementById('p1Input').value);
+      const p2 = parseFloat(document.getElementById('p2Input').value);
+      const time = parseFloat(document.getElementById('timeInput').value);
+
+      if (isNaN(p1) || isNaN(p2) || isNaN(time) || time <= 0) {
+        alert("Por favor ingrese valores válidos.");
+        return;
+      }
+
+      const drop = (p1 - p2).toFixed(2);
+      const rate = (drop / time).toFixed(3);
+      const resultDiv = document.getElementById('leakResult');
+
+      resultDiv.classList.remove('d-none', 'alert-info', 'alert-success', 'alert-danger');
+
+      if (drop <= 0.2) {
+        resultDiv.classList.add('alert-success');
+        resultDiv.innerHTML = `<i class="fa-solid fa-circle-check me-2"></i><strong>Prueba Correcta:</strong> Caída total de ${drop} BAR (${rate} BAR/min). Dentro del límite aceptable de estanqueidad.`;
+      } else {
+        resultDiv.classList.add('alert-danger');
+        resultDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2"></i><strong>Alerta de Fuga:</strong> Caída excesiva de ${drop} BAR (${rate} BAR/min). Se requiere inspección del circuito.`;
+      }
+    }
+
+    // Simulación de variación de presión en tiempo real
+    setInterval(() => {
+      const liveElem = document.getElementById('livePressure');
+      if (liveElem) {
+        let val = parseFloat(liveElem.innerText);
+        let variation = (Math.random() * 0.04 - 0.02);
+        liveElem.innerText = (val + variation).toFixed(2);
+      }
+    }, 3000);
+  </script>
+</body>
+</html>
